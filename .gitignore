@@ -1,0 +1,10 @@
+*.log
+*.txt
+*.ucdb
+*.vcd
+*.wlf
+*.dll
+*.vstf
+transcript
+work/
+.vscode/
