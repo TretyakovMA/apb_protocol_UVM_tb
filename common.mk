@@ -6,6 +6,7 @@ QUESTASIM_DIR  = $(QUESTA_HOME)
 PROJECT_DIR   := $(CURDIR)/..
 TB_DIR        := $(PROJECT_DIR)/tb
 DUT_DIR       := $(PROJECT_DIR)/dut
+SIM_DIR       := $(PROJECT_DIR)/sim
 
 # =============================================================================
 # Производные переменные
@@ -13,8 +14,8 @@ DUT_DIR       := $(PROJECT_DIR)/dut
 UVM_SRC       = $(QUESTASIM_DIR)/verilog_src/uvm-1.2/src
 UVM_DPI       = $(QUESTASIM_DIR)/uvm-1.2/win64/uvm_dpi
 
-C_DLL         = $(TB_DIR)/work/c_functions.dll
-C_SRC         = $(TB_DIR)/base_classes/c_functions.c
+C_DLL         = $(SIM_DIR)/work/c_functions.dll
+C_SRC         = $(TB_DIR)/uvm_base_classes/c_functions.c
 
 # =============================================================================
 # Настройки симуляции
@@ -31,21 +32,6 @@ DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 # =============================================================================
 # Собираем все цели для симуляции
 # =============================================================================
-
-DUT_VARIANT ?= master
-
-ifeq ($(DUT_VARIANT),master)
-    DUT_MODULE     ?= APB_master.v
-    DEFINE_DUT     := +define+APB_MASTER_DUT
-else ifeq ($(DUT_VARIANT),slave)
-    DUT_MODULE     ?= APB_slave.v
-    DEFINE_DUT     := +define+APB_SLAVE_DUT
-else ifeq ($(DUT_VARIANT),top)
-    DUT_MODULE     ?= APB_top.v
-    DEFINE_DUT     := +define+APB_TOP_DUT
-else
-    $(error "Unknown DUT_VARIANT=$(DUT_VARIANT). Valid: master, slave, top")
-endif
 
 all: compile run_sims 
 
@@ -99,7 +85,7 @@ sim:
 		"+UVM_TESTNAME=$(strip $(TEST_NAME))" \
 		"+RUN_COUNT=%%i" \
 		"+UVM_VERBOSITY=$(strip $(VERBOSITY))" \
-		-sv_lib $(TB_DIR)/work/c_functions \
+		-sv_lib $(SIM_DIR)/work/c_functions \
 		-sv_lib $(UVM_DPI) \
 	)
 	@echo "All simulations completed for $(TEST_NAME)"

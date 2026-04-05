@@ -12,7 +12,7 @@ virtual class base_test extends uvm_test;
 	env_config        env_config_h;
 	
 `ifdef USE_CUSTOM_REPORT_SERVER
-	my_report_server  my_server; 
+	custom_report_server  my_server; 
 `endif
 
 

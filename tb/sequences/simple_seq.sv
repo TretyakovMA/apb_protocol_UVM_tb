@@ -12,6 +12,7 @@ class simple_seq extends uvm_sequence #(apb_m_transaction);
         tr = apb_m_transaction::type_id::create("tr");
         start_item(tr);
 
+        tr.transfer        = 1;
         tr.write           = 1;
         tr.read            = 0;
         tr.apb_write_paddr = 8'hA5;

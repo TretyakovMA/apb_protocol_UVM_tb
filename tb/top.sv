@@ -5,7 +5,7 @@ module top;
 	import uvm_pkg::*;
 	`include "uvm_macros.svh"
 
-    import apb_master_pkg::*;
+    import apb_pkg::*;
 
     logic pclk;
     logic presetn;

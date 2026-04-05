@@ -11,7 +11,8 @@ package apb_pkg;
 	`include "uvm_macros.svh"
     
     // Base Classes
-    `include "base_classes/base_pkg.sv"
+    `include "uvm_base_classes/base_classes_pkg.sv"
+    //`include "base_classes/base_pkg.sv"
 
     // Agent configs
     typedef base_agent_config #(virtual apb_master_if) apb_m_agent_config;
@@ -23,7 +24,7 @@ package apb_pkg;
     `include "verification_classes/apb_m_scoreboard.sv"
 
     // Enviroment
-    `include "enviroment/enviroment_inc.svh"
+    `include "environment/environment_inc.svh"
 
     // Sequences
     `include "sequences/simple_seq.sv"
