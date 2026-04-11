@@ -4,46 +4,91 @@ class apb_m_transaction extends uvm_sequence_item;
 
     `uvm_object_utils(apb_m_transaction)
 
-    // Входные сигналы
-    rand bit        transfer;          // Инициирование транзакции
-    rand bit        read;              // Разрешение чтения
-    rand bit        write;             // Разрешение записи
-    rand bit [8:0]  apb_write_paddr;   // Адрес для записи
-    rand bit [7:0]  apb_write_data;    // Данные для записи
-    rand bit [8:0]  apb_read_paddr;    // Адрес для чтения
 
-    rand bit        pready;            // Сигнал готовности от ведомого             
-    rand bit        pslverr;           // Сигнал ошибки от ведомого              
-    rand bit [7:0]  prdata;            // Данные от ведомого при чтении
+    rand apb_op_t op_q[$];
 
-    // Выходные сигналы
-    bit             psel1;             // Сигнал выбора первого ведомого
-    bit             psel2;             // Сигнал выбора второго ведомого
-    bit             penable;           // Сигнал разрешения доступа
-    bit             pwrite;            // Сигнал записи
-    bit [8:0]       paddr;             // Адрес
-    bit [7:0]       pwdata;            // Данные для записи
-    bit [7:0]       apb_read_data_out; // Выходные данные при чтении
+
+    constraint valid_op {
+        op_q.size() inside {[1:10]};
+        foreach(op_q[i]) {
+            op_q[i].read ^ op_q[i].write;
+            op_q[i].addr[7:0] < 256;
+        }
+    }
 
     
+
 
     function new(string name = "apb_m_transaction");
         super.new(name);
     endfunction
+    
 
 
-    function string convert2string();
-        string s = "-------------------- Input -------------------\n";
-
-        s = {s, $sformatf("read = %0b; write = %0b\n", read, write)};
-        s = {s, $sformatf("apb_write_paddr = %0h; apb_write_data = %0h; apb_read_paddr = %0h\n", apb_write_paddr, apb_write_data, apb_read_paddr)};
-        s = {s, $sformatf("pready = %0b; pslverr = %0b; prdata = %0h\n", pready, pslverr, prdata)};
-        
-        s = {s, "-------------------- Output ------------------\n"};
-        s = {s, $sformatf("psel1 = %0b; psel2 = %0b; penable = %0b; pwrite = %0b\n", psel1, psel2, penable, pwrite)};
-        s = {s, $sformatf("paddr = %0h; pwdata = %0h\n", paddr, pwdata)};
-
+    virtual function string convert2string();
+        string s = $sformatf("Burst of %0d operations:\n", op_q.size());
+        foreach (op_q[i]) begin
+            s = {s, $sformatf("  [%2d] r=%b w=%b addr=%3h wdata=%2h | psel1=%b psel2=%b penable=%b pwrite=%b paddr=%3h pwdata=%2h prdata_out=%2h\n",
+                i, op_q[i].read, op_q[i].write, op_q[i].addr, op_q[i].apb_write_data,
+                op_q[i].psel1, op_q[i].psel2, op_q[i].penable, op_q[i].pwrite, op_q[i].paddr,
+                op_q[i].pwdata, op_q[i].apb_read_data_out
+            )};
+        end
         return s;
-    endfunction: convert2string
+    endfunction
+
+    
+
+    virtual function void do_copy(uvm_object rhs);
+        apb_m_transaction copied;
+        if (!$cast(copied, rhs)) `uvm_fatal(get_type_name(), "cast failed")
+        super.do_copy(rhs);
+        this.op_q = copied.op_q;
+    endfunction: do_copy
+
+
+
+    function apb_m_transaction clone_me();
+        apb_m_transaction clone;
+        uvm_object tmp;
+		
+		tmp = this.clone();
+		$cast(clone, tmp);
+		return clone;
+    endfunction: clone_me
+
+
+
+    virtual function bit do_compare(uvm_object rhs, uvm_comparer comparer);
+        apb_m_transaction compared;
+        bit same = 1;
+
+        if (rhs == null) `uvm_fatal(get_type_name(), "rhs is null")
+        if (!$cast(compared, rhs)) begin
+            `uvm_error(get_type_name(), "type mismatch")
+            return 0;
+        end
+
+        if (this.op_q.size() != compared.op_q.size()) begin
+            `uvm_error(get_type_name(), 
+                $sformatf("burst length mismatch: exp=%0d, act=%0d", 
+                          this.op_q.size(), compared.op_q.size()))
+            return 0;
+        end
+
+        foreach (this.op_q[i]) begin
+            if (this.op_q[i] != compared.op_q[i]) begin   
+                same = 0;
+                `uvm_error(get_type_name(), 
+                    $sformatf("beat[%0d] mismatch:\nexp=%p\nact=%p", 
+                              i, this.op_q[i], compared.op_q[i]))
+            end 
+            else begin
+                `uvm_info(get_type_name(), $sformatf("beat[%0d] OK", i), UVM_HIGH)
+            end
+        end
+
+        return same;
+    endfunction: do_compare
 endclass
 `endif

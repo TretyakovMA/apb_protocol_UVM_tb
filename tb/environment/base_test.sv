@@ -8,8 +8,8 @@ virtual class base_test extends uvm_test;
 		super.new(name, parent);
 	endfunction: new
 	
-	env               env_h;
-	env_config        env_config_h;
+	env                   env_h;
+	env_config            env_config_h;
 	
 `ifdef USE_CUSTOM_REPORT_SERVER
 	custom_report_server  my_server; 
@@ -20,15 +20,17 @@ virtual class base_test extends uvm_test;
 	// Функция для настройки конфигураций агентов
 	virtual function void adjust_agent_configs();
 		env_config_h.apb_m_agent_config_h.has_monitor = 1;
+		env_config_h.apb_m_agent_config_h.is_active   = UVM_ACTIVE;
 	endfunction: adjust_agent_configs
 
 	// Функция для выбора конфигурации env (выбор необходимых агентов)
 	virtual function void adjust_env_config;
-		return; //По умолчанию все включено
+		return; 
 	endfunction: adjust_env_config
 
 	// Функция для дополнительных действий при построении теста
 	virtual function void build_hooks();
+		return;
 	endfunction: build_hooks
 	
 
@@ -67,7 +69,6 @@ virtual class base_test extends uvm_test;
 `endif
 
 
-
 		// Вызов дополнительных действий при построении теста
 		build_hooks();
 
@@ -79,7 +80,7 @@ virtual class base_test extends uvm_test;
 		super.start_of_simulation_phase(phase);
 
 		// Установка максимального времени симуляции
-		// (если симуляция дойдет до 1 миллисекунды, то она завершится)
+		// (если симуляция дойдет до 100 миллисекунд, то она завершится)
 		uvm_top.set_timeout(10**9);
 
 		// На всякий случай выводится топология проекта

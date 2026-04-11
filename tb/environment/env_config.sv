@@ -4,6 +4,8 @@ class env_config extends uvm_object;
 	`uvm_object_utils(env_config)
 
 	apb_m_agent_config apb_m_agent_config_h;
+
+	bit has_master_agent;
 	
 	function new(string name = "env_config");
 		super.new(name);

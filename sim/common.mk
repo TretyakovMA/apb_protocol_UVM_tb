@@ -22,8 +22,8 @@ C_SRC         = $(TB_DIR)/uvm_base_classes/c_functions.c
 # =============================================================================
 
 # Дополнительный настройки
-VERBOSITY  = UVM_HIGH # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
-SEED       = random
+VERBOSITY  ?= UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+SEED       ?= random
 
 # Флаги для компиляции
 DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
