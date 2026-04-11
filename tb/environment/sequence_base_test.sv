@@ -37,7 +37,7 @@ virtual class sequence_base_test #(
     // Функция для создания callback
 	// Настраивается в производных тестах, если требуется
 	virtual function void create_callbacks(); 
-
+        return;
 	endfunction: create_callbacks
 
     

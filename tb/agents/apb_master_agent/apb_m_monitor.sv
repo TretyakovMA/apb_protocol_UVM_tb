@@ -52,12 +52,27 @@ class apb_m_monitor extends base_monitor #(
             op.paddr   = vif.paddr;
             op.pwdata  = vif.pwdata;
 
+            `uvm_info(get_type_name(), $sformatf(
+                "Collected beat #%0d (transfer still %b)\nread = %0b, write = %0b, addr = %0h, apb_write_data = %0h\npsel1 = %0b, psel2 = %0b, pwrite = %0b, paddr = %0h, pwdata = %0h", 
+                tr.op_q.size(), vif.transfer, 
+                op.read, op.write, op.addr, op.apb_write_data,
+                op.psel1, op.psel2, op.pwrite, op.paddr, op.pwdata
+            ), UVM_HIGH)
+
             // response phase
             @(posedge vif.pclk iff vif.pready === 1);
             op.penable           = vif.penable;
             op.pslverr           = vif.pslverr;
             op.prdata            = vif.prdata;
             op.apb_read_data_out = vif.apb_read_data_out;
+
+            `uvm_info(get_type_name(), $sformatf(
+                "Collected beat #%0d (transfer still %b)\nread = %0b, write = %0b, addr = %0h, apb_write_data = %0h\npsel1 = %0b, psel2 = %0b, penable = %0b, pwrite = %0b, paddr = %0h, pwdata = %0h\npslverr = %0b, prdata = %0h, apb_read_data_out = %0h", 
+                tr.op_q.size(), vif.transfer, 
+                op.read, op.write, op.addr, op.apb_write_data,
+                op.psel1, op.psel2, op.penable, op.pwrite, op.paddr, op.pwdata,
+                op.pslverr, op.prdata, op.apb_read_data_out
+            ), UVM_HIGH)
 
             tr.op_q.push_back(op);
 

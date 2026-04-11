@@ -19,9 +19,9 @@ endif
 
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = back_to_back_rw_test:1 
+TESTS = full_session_test:1 
 
-VERBOSITY  = UVM_MEDIUM
+VERBOSITY  = UVM_LOW
 
 master: ; @$(MAKE) compile run_sims DUT_VARIANT=master
 

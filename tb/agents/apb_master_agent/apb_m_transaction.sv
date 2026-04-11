@@ -6,10 +6,11 @@ class apb_m_transaction extends uvm_sequence_item;
 
 
     rand apb_op_t op_q[$];
+    `define MAX_OP_Q_SIZE 10
 
 
     constraint valid_op {
-        op_q.size() inside {[1:10]};
+        op_q.size() inside {[1:`MAX_OP_Q_SIZE]};
         foreach(op_q[i]) {
             op_q[i].read ^ op_q[i].write;
             op_q[i].addr[7:0] < 256;

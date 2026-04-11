@@ -9,3 +9,5 @@
 `include "../sequences/apb_master_sequences/back_to_back_write_seq.sv"
 `include "../sequences/apb_master_sequences/back_to_back_read_seq.sv"
 `include "../sequences/apb_master_sequences/back_to_back_rw_seq.sv"
+`include "../sequences/apb_master_sequences/rw_with_wait_states_seq.sv"
+`include "../sequences/apb_master_sequences/full_session_seq.sv"

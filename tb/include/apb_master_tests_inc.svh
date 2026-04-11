@@ -9,3 +9,5 @@
 `include "../tests/apb_master_tests/back_to_back_write_test.sv"
 `include "../tests/apb_master_tests/back_to_back_read_test.sv"
 `include "../tests/apb_master_tests/back_to_back_rw_test.sv"
+`include "../tests/apb_master_tests/rw_with_wait_states_test.sv"
+`include "../tests/apb_master_tests/full_session_test.sv"

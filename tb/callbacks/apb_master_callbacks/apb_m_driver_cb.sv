@@ -8,11 +8,11 @@ class apb_m_driver_cb extends uvm_callback;
     endfunction
 
     virtual task delay_before_pready(virtual apb_master_if vif);
-        
+        return;
     endtask: delay_before_pready
 
     virtual task delay_before_next_tr(virtual apb_master_if vif);
-        
+        return;
     endtask: delay_before_next_tr
 endclass
 `endif

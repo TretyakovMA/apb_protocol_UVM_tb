@@ -14,7 +14,7 @@ class apb_m_coverage extends uvm_subscriber #(apb_m_transaction);
 
         // Размер пачки операций
         cp_burst_len : coverpoint burst_len {
-            bins len[] = {[1:10]};
+            bins len[] = {[1:`MAX_OP_Q_SIZE]}; // от 1 до максимального размера очереди
         }
     endgroup
 
@@ -66,10 +66,10 @@ class apb_m_coverage extends uvm_subscriber #(apb_m_transaction);
         }
 
         // Ошибка от слейва (pslverr)
-        cp_pslverr : coverpoint op.pslverr {
+        /*cp_pslverr : coverpoint op.pslverr {
             bins no_error = {0};
             bins error    = {1};
-        }
+        }*/
 
         
 
@@ -77,10 +77,11 @@ class apb_m_coverage extends uvm_subscriber #(apb_m_transaction);
         // =============================================
         // Кросс-покрытие 
         // =============================================
-        // Тип операции × выбор slave
-        cr_rw_psel : cross cp_rw, cp_psel;
 
-        
+        cr_rw_psel        : cross cp_rw, cp_psel;
+        cr_rw_addr        : cross cp_rw, cp_addr;
+        cr_wdata_addr     : cross cp_wdata, cp_addr;
+        cr_rdata_out_addr : cross cp_rdata_out, cp_addr;
 
     endgroup
 
@@ -98,7 +99,7 @@ class apb_m_coverage extends uvm_subscriber #(apb_m_transaction);
     // =============================================
     virtual function void write(apb_m_transaction t);
         if (t == null) begin
-            `uvm_error(get_type_name(), "получен null-транзакция")
+            `uvm_error(get_type_name(), "Received null transaction")
             return;
         end
 

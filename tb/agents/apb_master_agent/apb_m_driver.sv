@@ -21,8 +21,6 @@ class apb_m_driver extends base_driver #(
 		@(negedge vif.presetn);
 	endtask: _wait_for_reset_assert_
 
-    
-
 
 
     virtual task _reset_();
@@ -38,11 +36,16 @@ class apb_m_driver extends base_driver #(
     endtask: _reset_
 
     virtual task _drive_transaction_(apb_m_transaction tr);
+        // Счетчик, чтобы знать, какая транзакция последняя в группе
+        int count = 0;
         
+        // Поднимаем сигнал transfer
         vif.transfer        <= 1;
         @(posedge vif.pclk);
 
+        // Проходим все группы операций
         foreach (tr.op_q[i]) begin
+            // Начальные входные данные для мастера
             vif.read            <= tr.op_q[i].read;
             vif.write           <= tr.op_q[i].write;
             if(tr.op_q[i].write) begin
@@ -54,6 +57,13 @@ class apb_m_driver extends base_driver #(
             end
 
             repeat(1) @(posedge vif.pclk);
+            
+            // Если это последняя транзакция в группе, то опускаем transfer
+            if(count == tr.op_q.size() - 1) begin
+                vif.transfer <= 0;
+            end
+
+            // Создаем задержку перед pready если надо
             `uvm_do_callbacks(apb_m_driver, apb_m_driver_cb, delay_before_pready(vif))
             vif.pready  <= 1;
             vif.pslverr <= tr.op_q[i].pslverr;
@@ -66,6 +76,7 @@ class apb_m_driver extends base_driver #(
             )
 
             @(posedge vif.pclk);
+            // Очищаем все сигналы, кроме transfer
             vif.read            <= 0;
             vif.write           <= 0;
             vif.apb_write_paddr <= 0;
@@ -74,11 +85,13 @@ class apb_m_driver extends base_driver #(
             vif.pready          <= 0;
             vif.pslverr         <= 0;
             vif.prdata          <= 0;
+
+            count++;
         end
 
         `uvm_info(get_type_name(), {"Send transaction:\n", tr.convert2string()}, UVM_MEDIUM)
-        
-        _reset_(); 
+
+        // Дополнительная задержка перед следующей группой операций
         `uvm_do_callbacks(apb_m_driver, apb_m_driver_cb, delay_before_next_tr(vif))
     endtask: _drive_transaction_
 
