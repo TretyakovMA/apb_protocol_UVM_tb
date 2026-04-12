@@ -23,6 +23,8 @@ class apb_m_base_seq #(
 
             apply_constraints(tr);
 
+            `uvm_info(get_type_name(), { "Transaction: ", tr.convert2string() }, UVM_LOW)
+
             `uvm_info(get_type_name(), `START_TEST_STR, UVM_LOW)
 			finish_item(tr);
         end

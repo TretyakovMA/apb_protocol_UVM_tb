@@ -2,7 +2,7 @@
 TOP_MODULE  = top.sv
 TB_PKG      = apb_pkg.sv
 
-DUT_VARIANT ?= master
+DUT_VARIANT ?= slave
 
 ifeq ($(DUT_VARIANT),master)
     DUT_MODULE     ?= APB_master.v
@@ -19,10 +19,11 @@ endif
 
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = full_session_test:1 
+TESTS = s_simple_test:1 
 
-VERBOSITY  = UVM_LOW
+VERBOSITY  = UVM_MEDIUM
 
 master: ; @$(MAKE) compile run_sims DUT_VARIANT=master
+slave: ; @$(MAKE) compile run_sims DUT_VARIANT=slave
 
 include common.mk

@@ -11,6 +11,7 @@ module top;
     logic presetn;
 
     apb_master_if apb_m_if (pclk, presetn);
+    apb_slave_if  apb_s_if (pclk, presetn);
 
 
 `ifdef APB_MASTER_DUT
@@ -36,6 +37,21 @@ module top;
         .pwdata           (apb_m_if.pwdata),
         .apb_read_data_out(apb_m_if.apb_read_data_out)
     );
+`elsif APB_SLAVE_DUT
+    apb_slave dut (
+        .presetn          (presetn),
+        .pclk             (pclk),
+
+        .psel             (apb_s_if.psel),
+        .penable          (apb_s_if.penable),
+        .pwrite           (apb_s_if.pwrite),
+        .paddr            (apb_s_if.paddr),
+        .pwdata           (apb_s_if.pwdata),
+
+        .prdata           (apb_s_if.prdata),
+        .pready           (apb_s_if.pready),
+        .pslverr          (apb_s_if.pslverr)
+    );
 `else 
     initial begin
         `uvm_fatal("TOP", "APB_DUT is not defined. Please define it to include the DUT in the simulation.")
@@ -48,7 +64,7 @@ module top;
     end
 
     initial begin
-        presetn = 0;
+        presetn     = 0;
         #20 presetn = 1;
     end
 
@@ -56,6 +72,7 @@ module top;
     initial begin
         $timeformat(-9, 0, " ns", 5);
         uvm_config_db #(virtual interface apb_master_if)::set(null, "*", "apb_m_vif", apb_m_if);
+        uvm_config_db #(virtual interface apb_slave_if)::set(null, "*", "apb_s_vif", apb_s_if);
         run_test();
     end
 

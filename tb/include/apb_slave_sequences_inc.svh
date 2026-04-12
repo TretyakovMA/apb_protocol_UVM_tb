@@ -1,0 +1,1 @@
+`include "../sequences/apb_slave_sequences/s_simple_seq.sv"

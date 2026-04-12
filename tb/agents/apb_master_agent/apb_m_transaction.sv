@@ -12,8 +12,15 @@ class apb_m_transaction extends uvm_sequence_item;
     constraint valid_op {
         op_q.size() inside {[1:`MAX_OP_Q_SIZE]};
         foreach(op_q[i]) {
+            op_q[i].psel1             == 0;
+            op_q[i].psel2             == 0;
+            op_q[i].apb_read_data_out == 0;
+            op_q[i].penable           == 0;
+            op_q[i].pwrite            == 0;
+            op_q[i].paddr             == 0;
+            op_q[i].pwdata            == 0;
+
             op_q[i].read ^ op_q[i].write;
-            op_q[i].addr[7:0] < 256;
         }
     }
 

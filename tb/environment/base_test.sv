@@ -21,11 +21,15 @@ virtual class base_test extends uvm_test;
 	virtual function void adjust_agent_configs();
 		env_config_h.apb_m_agent_config_h.has_monitor = 1;
 		env_config_h.apb_m_agent_config_h.is_active   = UVM_ACTIVE;
+
+		env_config_h.apb_s_agent_config_h.has_monitor = 1;
+		env_config_h.apb_s_agent_config_h.is_active   = UVM_ACTIVE;
 	endfunction: adjust_agent_configs
 
 	// Функция для выбора конфигурации env (выбор необходимых агентов)
 	virtual function void adjust_env_config;
-		return; 
+		`uvm_info(get_type_name(), "Agents is not configured", UVM_LOW)
+		return; // По умолчанию ничего не создается
 	endfunction: adjust_env_config
 
 	// Функция для дополнительных действий при построении теста
@@ -38,6 +42,12 @@ virtual class base_test extends uvm_test;
 	virtual function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
 
+// Мой report_server создается только если симуляция запустилась с нужным флагом
+`ifdef USE_CUSTOM_REPORT_SERVER
+		my_server = new();
+		uvm_report_server::set_server(my_server);
+`endif
+
 		// Создание конфигурации среды, с ней создаются все agent_config
 		env_config_h = env_config::type_id::create("env_config_h", this);
 		
@@ -46,6 +56,9 @@ virtual class base_test extends uvm_test;
 			this, "", "apb_m_vif", env_config_h.apb_m_agent_config_h.vif
 		)) `uvm_fatal(get_type_name(), "Faild to get apb_master interface")
 
+		if(!uvm_config_db #(virtual interface apb_slave_if)::get(
+			this, "", "apb_s_vif", env_config_h.apb_s_agent_config_h.vif
+		)) `uvm_fatal(get_type_name(), "Faild to get apb_slave interface")
 
 
 		// Настройка agent_config
@@ -60,13 +73,6 @@ virtual class base_test extends uvm_test;
 		);
 		env_h     = env::type_id::create("env_h", this);
 
-
-
-		// Мой report_server создается только если симуляция запустилась с нужным флагом
-`ifdef USE_CUSTOM_REPORT_SERVER
-		my_server = new();
-		uvm_report_server::set_server(my_server);
-`endif
 
 
 		// Вызов дополнительных действий при построении теста

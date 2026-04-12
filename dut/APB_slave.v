@@ -12,7 +12,7 @@ module apb_slave (
 );
 
     // Internal memory: 256 bytes
-    reg [7:0] memory [255:0];
+    reg [7:0] memory [127:0];
 
     // Address register
     reg [7:0] addr_reg;
@@ -31,7 +31,7 @@ module apb_slave (
             if (psel) begin
                 // Handle Read Operations
                 if (!pwrite && penable) begin
-                    if (paddr < 8'd256) begin
+                    if (paddr < 8'd128) begin
                         addr_reg <= paddr;
                         prdata <= memory[paddr];    // Read data from memory
                         pready <= 1'b1;             // Indicate successful transfer
@@ -43,7 +43,7 @@ module apb_slave (
 
                 // Handle Write Operations
                 if (pwrite && penable) begin
-                    if (paddr < 8'd256) begin
+                    if (paddr < 8'd128) begin
                         memory[paddr] <= pwdata;    // Write data to memory
                         pready <= 1'b1;             // Indicate successful transfer
                     end else begin

@@ -1,0 +1,1 @@
+`include "../tests/apb_slave_tests/s_simple_test.sv"
